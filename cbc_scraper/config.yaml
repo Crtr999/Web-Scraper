@@ -1,0 +1,38 @@
+# CBC Settlement Funding — Case Scraper Configuration
+
+output:
+  dir: "~/cbc_output"               # CSVs are written here, one file per day
+  filename_prefix: "ss_cases"       # Files look like: ss_cases_2024-01-15.csv
+
+logging:
+  dir: "~/cbc_logs"
+  level: "INFO"
+
+browser:
+  headless: false   # KEEP FALSE on first run — watch the browser so we can verify selectors
+                    # Switch to true once everything is confirmed working
+  slow_mo: 400      # Milliseconds between browser actions — keeps server load polite
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SITES
+# Add a new site by adding a new block here and a corresponding scraper class.
+# Each site just needs: enabled, name, url, search_parties.
+# ─────────────────────────────────────────────────────────────────────────────
+sites:
+  ny_webcivil:
+    enabled: true
+    name: "NY WebCivil Supreme — Party Search"
+    url: "https://iapps.courts.state.ny.us/webcivil/FCASSearch?param=P"
+
+    # Parties to search for. Add as many as you need.
+    search_parties:
+      - "J.G. Wentworth Originations, LLC"
+      # - "Another Company Name, LLC"
+
+    # Form values to set before submitting.
+    # These match the labels/options in the NY WebCivil search form.
+    # Adjust if the site uses different option text.
+    form:
+      role: "All Roles"              # Role dropdown value
+      case_status: "Open"            # Case Status dropdown value
+      future_appearances: "No"       # Return Only Cases with Future Appearances

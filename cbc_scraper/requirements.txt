@@ -1,0 +1,14 @@
+# CBC Case Scraper dependencies
+#
+# Install:
+#   pip install -r requirements.txt
+#   playwright install chromium
+#
+# Note: 'scrapling' is the library in this repo (../scrapling).
+# Install it first with: pip install -e ..
+
+playwright>=1.40.0
+pyyaml>=6.0
+
+# scrapling is assumed already installed from this repo.
+# If running standalone: pip install scrapling
