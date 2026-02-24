@@ -105,6 +105,11 @@ class NYWebCivilScraper(BaseScraper):
             try:
                 records = await self._scrape_party(page, party_name)
             finally:
+                if not headless:
+                    # In inspect mode: pause so you can see the results before the browser closes.
+                    # Press Enter in the terminal when you're done looking.
+                    logger.info("[ny_webcivil] Browser paused — press Enter in the terminal to close it.")
+                    await asyncio.get_event_loop().run_in_executor(None, input)
                 await browser.close()
 
         return records
