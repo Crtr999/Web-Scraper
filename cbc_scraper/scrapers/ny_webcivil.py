@@ -36,7 +36,7 @@ import asyncio
 import logging
 from datetime import datetime
 
-from playwright.async_api import async_playwright, Page, Browser
+from patchright.async_api import async_playwright, Page, Browser
 
 from .base import BaseScraper, CaseRecord
 

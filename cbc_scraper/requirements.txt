@@ -8,6 +8,7 @@
 # Install it first with: pip install -e ..
 
 playwright>=1.40.0
+patchright>=1.40.0   # Drop-in Playwright replacement that patches Chromium bot-detection flags
 pyyaml>=6.0
 
 # scrapling is assumed already installed from this repo.
