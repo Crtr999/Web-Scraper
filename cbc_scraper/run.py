@@ -29,6 +29,9 @@ import yaml
 
 # Make sure the cbc_scraper package root is on sys.path when run directly.
 sys.path.insert(0, str(Path(__file__).parent))
+# Make the parent repo directory importable so 'import scrapling' works
+# even if 'pip install -e .' failed (e.g. system Python permission issues).
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from scrapers import SCRAPER_MAP
 from core.storage import CaseStorage
