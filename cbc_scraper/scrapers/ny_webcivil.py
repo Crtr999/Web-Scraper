@@ -163,6 +163,11 @@ class NYWebCivilScraper(BaseScraper):
         page_num = 1
 
         while True:
+            # Wait for page to fully settle before reading — catches redirects
+            # that fire after the initial load event.
+            await page.wait_for_load_state("load", timeout=60_000)
+            await page.screenshot(path=f"results_page_{page_num}.png")
+            logger.info(f"[ny_webcivil] Screenshot saved: results_page_{page_num}.png")
             html = await page.content()
             page_records = self._parse_results(html, party_name)
             all_records.extend(page_records)
