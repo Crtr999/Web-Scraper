@@ -45,12 +45,12 @@ logger = logging.getLogger(__name__)
 # ── URL ───────────────────────────────────────────────────────────────────────
 _URL = "https://iapps.courts.state.ny.us/webcivil/FCASSearch?param=P"
 
-# ── Form selectors  (⚠ provisional — confirm on first --inspect run) ──────────
-_PARTY_INPUT   = "input[name='partyName']"          # Business / party name field
-_ROLE_SELECT   = "select[name='roleType']"           # Role dropdown
-_STATUS_SELECT = "select[name='caseStatus']"         # Case Status dropdown
-_FUTURE_SELECT = "select[name='futureApp']"          # Future Appearances dropdown
-_SUBMIT        = "input[type='submit'], button[type='submit']"
+# ── Form selectors  (confirmed from live page field dump) ─────────────────────
+_PARTY_INPUT   = "input[name='txtPlaintiffLname']"              # Business / party name
+_ROLE_RADIO    = "input[name='rdRepresents'][value='AllRoles']" # Role: All Roles (radio)
+_STATUS_RADIO  = "input[name='rbStatus'][value='open']"         # Status: Open (radio)
+_FUTURE_RADIO  = "input[name='rbFutureCases'][value='N']"       # Future appearances: No (radio)
+_SUBMIT        = "input[name='btnFindCase']"                    # "Find Case(s)" button
 
 # ── Results selectors  (⚠ provisional — confirm on first --inspect run) ───────
 _RESULTS_TABLE = "table"          # Main results table — tighten after first run
@@ -136,11 +136,13 @@ class NYWebCivilScraper(BaseScraper):
         # ── Fill the search form ──────────────────────────────────────────────
         try:
             await page.fill(_PARTY_INPUT, party_name)
-            await self._select_option(page, _ROLE_SELECT,   self.site_config["form"]["role"])
-            await self._select_option(page, _STATUS_SELECT, self.site_config["form"]["case_status"])
-            await self._select_option(page, _FUTURE_SELECT, self.site_config["form"]["future_appearances"])
+            await page.click(_ROLE_RADIO)    # All Roles
+            await page.click(_STATUS_RADIO)  # Open cases
+            await page.click(_FUTURE_RADIO)  # Future appearances: No
+            # NOTE: if a CAPTCHA challenge appears in the browser window at this
+            # point, solve it manually — then the form will submit automatically.
             await page.click(_SUBMIT)
-            await page.wait_for_load_state("load", timeout=60_000)
+            await page.wait_for_load_state("load", timeout=120_000)  # Extra time for CAPTCHA
         except Exception as exc:
             safe_name = party_name.replace(" ", "_").replace(",", "")
             screenshot = f"debug_{safe_name}.png"
