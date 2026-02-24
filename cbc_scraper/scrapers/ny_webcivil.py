@@ -118,6 +118,21 @@ class NYWebCivilScraper(BaseScraper):
         # If there's a Terms of Use acceptance page, click through it.
         await self._accept_terms_if_present(page)
 
+        # ── Diagnostic: dump all form fields so we can confirm selectors ──────
+        fields = await page.evaluate("""() =>
+            Array.from(document.querySelectorAll('input, select, textarea')).map(el => ({
+                tag:         el.tagName,
+                name:        el.name,
+                id:          el.id,
+                type:        el.type || '',
+                placeholder: el.placeholder || '',
+                value:       el.value || '',
+            }))
+        """)
+        logger.info(f"[ny_webcivil] Form fields on page: {fields}")
+        await page.screenshot(path="form_loaded.png")
+        logger.info("[ny_webcivil] Screenshot saved: form_loaded.png")
+
         # ── Fill the search form ──────────────────────────────────────────────
         try:
             await page.fill(_PARTY_INPUT, party_name)
