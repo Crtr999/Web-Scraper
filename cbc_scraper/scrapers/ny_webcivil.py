@@ -113,7 +113,7 @@ class NYWebCivilScraper(BaseScraper):
 
     async def _scrape_party(self, page: Page, party_name: str) -> list[CaseRecord]:
         logger.info(f"[ny_webcivil] Searching: {party_name!r}")
-        await page.goto(_URL, wait_until="networkidle", timeout=30_000)
+        await page.goto(_URL, wait_until="load", timeout=60_000)
 
         # If there's a Terms of Use acceptance page, click through it.
         await self._accept_terms_if_present(page)
@@ -125,7 +125,7 @@ class NYWebCivilScraper(BaseScraper):
             await self._select_option(page, _STATUS_SELECT, self.site_config["form"]["case_status"])
             await self._select_option(page, _FUTURE_SELECT, self.site_config["form"]["future_appearances"])
             await page.click(_SUBMIT)
-            await page.wait_for_load_state("networkidle", timeout=30_000)
+            await page.wait_for_load_state("load", timeout=60_000)
         except Exception as exc:
             safe_name = party_name.replace(" ", "_").replace(",", "")
             screenshot = f"debug_{safe_name}.png"
@@ -151,7 +151,7 @@ class NYWebCivilScraper(BaseScraper):
                 break
 
             await next_link.first.click()
-            await page.wait_for_load_state("networkidle", timeout=30_000)
+            await page.wait_for_load_state("load", timeout=60_000)
             page_num += 1
 
         logger.info(f"[ny_webcivil] Total for {party_name!r}: {len(all_records)}")
@@ -221,7 +221,7 @@ class NYWebCivilScraper(BaseScraper):
             if await btn.count() > 0:
                 logger.info(f"[ny_webcivil] Accepting terms: clicking '{label}'")
                 await btn.first.click()
-                await page.wait_for_load_state("networkidle")
+                await page.wait_for_load_state("load")
                 break
 
     @staticmethod
